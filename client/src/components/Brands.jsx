@@ -35,12 +35,12 @@ const Brands = () => {
         </div>
       </div>
 
-      <div className="relative w-full overflow-hidden flex pause-on-hover py-4 opacity-80 group">
+      <div className="relative w-full overflow-hidden flex pause-on-hover py-4 group">
         <div className="flex w-max animate-marquee space-x-6 md:space-x-10 pr-6 md:pr-10">
           {brands.map((brand, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-300 w-[180px] md:w-[220px] flex-shrink-0"
+              className="flex items-center justify-center transition-all duration-300 w-[180px] md:w-[220px] flex-shrink-0 active:scale-90"
             >
               <img
                 src={brand.logo}
@@ -55,7 +55,7 @@ const Brands = () => {
           {brands.map((brand, idx) => (
             <div
               key={`dup-${idx}`}
-              className="flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-300 w-[180px] md:w-[220px] flex-shrink-0"
+              className="flex items-center justify-center transition-all duration-300 w-[180px] md:w-[220px] flex-shrink-0 active:scale-90"
             >
               <img
                 src={brand.logo}

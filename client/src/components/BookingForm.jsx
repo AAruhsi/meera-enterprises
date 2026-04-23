@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Phone, User, Settings, CheckCircle2, Loader2, ShieldCheck } from 'lucide-react';
+import { Calendar, Clock, MapPin, Phone, User, Settings, CheckCircle2, Loader2, ShieldCheck, MessageSquare } from 'lucide-react';
 
 const BookingForm = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [whatsappUrl, setWhatsappUrl] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -14,6 +15,40 @@ const BookingForm = () => {
     time: '',
     address: ''
   });
+
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.name.trim()) {
+      newErrors.name = 'Full name is required';
+    } else if (formData.name.trim().length < 3) {
+      newErrors.name = 'Name must be at least 3 characters long';
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+      newErrors.phone = 'Please enter a valid 10-digit phone number';
+    }
+
+    if (!formData.service) {
+      newErrors.service = 'Please select a service';
+    }
+
+    if (formData.date) {
+      const selectedDate = new Date(formData.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedDate < today) {
+        newErrors.date = 'Date cannot be in the past';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const servicesList = [
     'Fridge Repair', 'Washing Machine Repair', 'Microwave Repair',
@@ -30,37 +65,96 @@ const BookingForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
-
-  const handleSubmit = (e) => {
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1vcweU-aBDMpY_DtN-k9DezKDJ6yp7RkLZmEiGm2b1oop7jVOA28u9M9SI3adEYdK/exec";
+  const DEPLOYMENT_ID = "AKfycbx1vcweU-aBDMpY_DtN-k9DezKDJ6yp7RkLZmEiGm2b1oop7jVOA28u9M9SI3adEYdK"
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    
-    // Mock API call
-    setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
-      console.log('Submitted Payload:', JSON.stringify(formData, null, 2));
-      
-      // Reset after showing success
-      setTimeout(() => {
-        setSuccess(false);
-        setFormData({
-          name: '', phone: '', service: '', brand: '', date: '', time: '', address: ''
-        });
-      }, 5000);
-    }, 1500);
-  };
 
+    if (!validate()) return;
+
+    setLoading(true);
+
+    try {
+      // Prepare data for Google Sheets
+      const sheetData = {
+        name: formData.name,
+        phone: formData.phone,
+        service: formData.service,
+        brand: formData.brand,
+        date: formData.date,
+        time: formData.time,
+        address: formData.address,
+        feedback: "",
+        rating: "",
+        status: "New"
+      };
+
+      // 1️⃣ Send to Google Sheets
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(sheetData),
+      });
+
+      // 2️⃣ (Optional) Send to your backend
+      // await fetch(import.meta.env.VITE_API_URL + '/api/bookings', {...})
+
+      const OWNER_WHATSAPP = '919927957598';
+
+      const message =
+        `*New Service Booking*\n\n` +
+        `*Name:* ${formData.name}\n` +
+        `*Phone:* ${formData.phone}\n` +
+        `*Service:* ${formData.service}\n` +
+        (formData.brand ? `*Brand:* ${formData.brand}\n` : '') +
+        (formData.date ? `*Date:* ${formData.date}\n` : '') +
+        (formData.time ? `*Time:* ${formData.time}\n` : '') +
+        (formData.address ? `*Address:* ${formData.address}` : '');
+
+      const url = `https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(message)}`;
+      setWhatsappUrl(url);
+
+      // Success UI
+      setSuccess(true);
+
+      // Try to open automatically (might be blocked by browser)
+      try {
+        window.open(url, '_blank');
+      } catch (e) {
+        console.error("Popup blocked:", e);
+      }
+
+      // Reset form
+      setFormData({
+        name: '',
+        phone: '',
+        service: '',
+        brand: '',
+        date: '',
+        time: '',
+        address: ''
+      });
+
+    } catch (error) {
+      console.error(error);
+      alert("Error submitting form");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <section id="book" className="py-24 bg-primary relative overflow-hidden">
       {/* Dynamic background element */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-dark rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
+
         <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-12 border border-gray-100">
-          
+
           <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-primary-dark mb-3">Book a Service Instantly</h2>
             <p className="text-gray-500">Fill out the form below and our technician will reach out to you shortly.</p>
@@ -72,10 +166,24 @@ const BookingForm = () => {
                 <CheckCircle2 className="w-12 h-12 text-green-600" />
               </div>
               <h3 className="text-2xl font-bold text-green-800 mb-2">Booking Confirmed!</h3>
-              <p className="text-green-700 max-w-sm mx-auto">
-                Thank you, <span className="font-bold">{formData.name}</span>. We've received your request for {formData.service}. Our team will contact you soon.
+              <p className="text-green-700 max-w-sm mx-auto mb-6">
+                Thank you! We've received your request for {formData.service || 'your service'}. Our team will contact you soon.
               </p>
-              <button 
+
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-4 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-xl font-bold text-lg shadow-lg shadow-green-200 flex items-center justify-center gap-2 transition-all active:scale-95"
+              >
+                <MessageSquare className="w-6 h-6" />
+                Continue to WhatsApp
+              </a>
+
+              <p className="text-xs text-gray-400 mt-4">
+                Redirection not working? Click the button above.
+              </p>
+              <button
                 onClick={() => setSuccess(false)}
                 className="mt-8 text-green-700 font-semibold hover:text-green-800 underline decoration-2 underline-offset-4"
               >
@@ -84,23 +192,23 @@ const BookingForm = () => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
+
                 {/* Form Group: Name */}
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
                     <User className="w-4 h-4 text-primary" /> Full Name *
                   </label>
                   <input
-                    required
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all"
+                    className={`w-full bg-gray-50 border ${errors.name ? 'border-red-500' : 'border-gray-200'} text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all`}
                     placeholder="Rahul Sharma"
                   />
+                  {errors.name && <p className="text-red-500 text-xs mt-1 ml-1">{errors.name}</p>}
                 </div>
 
                 {/* Form Group: Phone */}
@@ -109,14 +217,14 @@ const BookingForm = () => {
                     <Phone className="w-4 h-4 text-primary" /> Phone Number *
                   </label>
                   <input
-                    required
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all"
+                    className={`w-full bg-gray-50 border ${errors.phone ? 'border-red-500' : 'border-gray-200'} text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all`}
                     placeholder="99999 99999"
                   />
+                  {errors.phone && <p className="text-red-500 text-xs mt-1 ml-1">{errors.phone}</p>}
                 </div>
 
                 {/* Form Group: Service */}
@@ -125,15 +233,15 @@ const BookingForm = () => {
                     <Settings className="w-4 h-4 text-primary" /> Select Service *
                   </label>
                   <select
-                    required
                     name="service"
                     value={formData.service}
                     onChange={handleChange}
-                    className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all appearance-none cursor-pointer"
+                    className={`w-full bg-gray-50 border ${errors.service ? 'border-red-500' : 'border-gray-200'} text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all appearance-none cursor-pointer`}
                   >
                     <option value="" disabled>Choose a service...</option>
                     {servicesList.map((srv) => <option key={srv} value={srv}>{srv}</option>)}
                   </select>
+                  {errors.service && <p className="text-red-500 text-xs mt-1 ml-1">{errors.service}</p>}
                 </div>
 
                 {/* Form Group: Brand */}
@@ -162,8 +270,9 @@ const BookingForm = () => {
                     name="date"
                     value={formData.date}
                     onChange={handleChange}
-                    className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all cursor-pointer"
+                    className={`w-full bg-gray-50 border ${errors.date ? 'border-red-500' : 'border-gray-200'} text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all cursor-pointer`}
                   />
+                  {errors.date && <p className="text-red-500 text-xs mt-1 ml-1">{errors.date}</p>}
                 </div>
 
                 {/* Form Group: Time */}
@@ -208,7 +317,7 @@ const BookingForm = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full py-4 rounded-xl font-bold text-lg text-primary-dark transition-all duration-300 shadow-lg flex items-center justify-center gap-2 ${loading ? 'bg-accent/80 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover shadow-accent/30'}`}
+                  className={`w-full py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 shadow-lg flex items-center justify-center gap-2 active:scale-95 ${loading ? 'bg-accent/80 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover shadow-accent/30'}`}
                 >
                   {loading ? (
                     <>

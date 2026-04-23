@@ -1,12 +1,12 @@
 import React from 'react';
-import { 
-  Snowflake, 
-  Wind, 
-  Tv, 
-  Flame, 
-  Droplet, 
-  Coffee, 
-  WashingMachine, 
+import {
+  Snowflake,
+  Wind,
+  Tv,
+  Flame,
+  Droplet,
+  Coffee,
+  WashingMachine,
   Zap,
   Fan,
   Power
@@ -14,20 +14,20 @@ import {
 
 const Services = () => {
   const services = [
-    { name: 'AC Service & Repair', icon: Snowflake, desc: 'Cooling issues, gas leak, deep cleaning', colSpan: 'md:col-span-2 lg:col-span-2' },
-    { name: 'Washing Machine', icon: Zap, desc: 'Top/Front load repair & maintenance', colSpan: 'md:col-span-1 lg:col-span-1' },
-    { name: 'Fridge Repair', icon: Wind, desc: 'Cooling fixing, gas charging', colSpan: 'md:col-span-1 lg:col-span-1' },
-    { name: 'Microwave/OTG', icon: Power, desc: 'Heating problems, display error', colSpan: 'md:col-span-2 lg:col-span-1' },
-    { name: 'RO Water Purifier', icon: Droplet, desc: 'Filter change, leakage fix', colSpan: 'md:col-span-1 lg:col-span-1' },
-    { name: 'Electric Geyser', icon: Flame, desc: 'Heating element change, installation', colSpan: 'col-span-full lg:col-span-2' },
-    { name: 'Chimney Service', icon: Fan, desc: 'Deep clean, motor replacement', colSpan: 'md:col-span-1 lg:col-span-1' },
-    { name: 'TV Repair', icon: Tv, desc: 'Panel issues, sound/display fix', colSpan: 'md:col-span-2 lg:col-span-1' },
+    { name: 'AC Service & Repair', icon: Snowflake, desc: 'Cooling issues, gas leak, deep cleaning' },
+    { name: 'Washing Machine', icon: Zap, desc: 'Top/Front load repair & maintenance' },
+    { name: 'Fridge Repair', icon: Wind, desc: 'Cooling fixing, gas charging' },
+    { name: 'Microwave/OTG', icon: Power, desc: 'Heating problems, display error' },
+    { name: 'RO Water Purifier', icon: Droplet, desc: 'Filter change, leakage fix' },
+    { name: 'Electric Geyser', icon: Flame, desc: 'Heating element change, installation' },
+    { name: 'Chimney Service', icon: Fan, desc: 'Deep clean, motor replacement' },
+    { name: 'TV Repair', icon: Tv, desc: 'Panel issues, sound/display fix' },
   ];
 
   return (
     <section id="services" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-primary text-sm font-bold tracking-widest uppercase mb-3">Our Expertise</h2>
           <h3 className="text-3xl md:text-4xl font-bold text-primary-dark mb-4">Comprehensive Repair Services</h3>
@@ -40,18 +40,15 @@ const Services = () => {
           {services.map((service, index) => {
             const Icon = service.icon;
             return (
-              <div 
-                key={index} 
-                className={`group bg-gray-50 border border-gray-100 rounded-2xl p-6 hover:shadow-xl hover:shadow-accent/10 hover:border-accent/30 transition-all duration-300 ${service.colSpan}`}
+              <div
+                key={index}
+                className="group bg-gray-50 border border-gray-200 md:border-gray-100 md:hover:bg-primary md:hover:border-transparent md:hover:text-white rounded-2xl p-6 hover:shadow-xl hover:shadow-accent/10 transition-all duration-300 active:scale-95 active:bg-primary active:text-white"
               >
-                <div className="bg-white w-14 h-14 rounded-xl shadow-sm flex items-center justify-center text-primary-dark mb-5 group-hover:text-accent group-hover:bg-primary-dark transition-colors">
+                <div className="bg-white w-14 h-14 rounded-xl shadow-sm flex items-center justify-center text-slate-900 mb-5 group-hover:text-accent transition-colors">
                   <Icon className="w-7 h-7" />
                 </div>
-                <h4 className="text-xl font-bold text-primary-dark mb-2">{service.name}</h4>
-                <p className="text-gray-600">{service.desc}</p>
-                <div className="mt-4 flex items-center text-sm font-semibold text-primary opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 transform duration-300">
-                  Book Now <span className="ml-1">→</span>
-                </div>
+                <h4 className="text-xl font-bold mb-2 text-slate-900 group-hover:text-white transition-colors duration-300">{service.name}</h4>
+                <p className="text-slate-700 group-hover:text-white transition-colors duration-300">{service.desc}</p>
               </div>
             );
           })}
@@ -62,7 +59,7 @@ const Services = () => {
               <h4 className="text-2xl md:text-3xl font-bold mb-2">Need general electrical work?</h4>
               <p className="text-blue-100 text-lg max-w-xl">Wiring, switchboard repair, light installation, and emergency electrical fixes.</p>
             </div>
-            <a href="#book" className="z-10 bg-accent text-primary-dark px-8 py-3 rounded-xl font-bold hover:bg-accent-hover transition-colors shadow-lg">
+            <a href="#book" className="z-10 bg-accent text-white px-8 py-3 rounded-xl font-bold hover:bg-accent-hover transition-colors shadow-lg">
               Contact Electrician
             </a>
           </div>
