@@ -24,7 +24,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
 
           <div className="flex items-center gap-2">
-            <img src="/favicon.png" alt="Meera Enterprises" className="h-10 w-auto object-contain" />
+            <img src="/MeeraLogo.png" alt="Meera Enterprises" className="h-10 w-auto object-contain" />
             <span className={`font-bold text-xl transition-colors duration-300 ${isScrolled ? 'text-primary' : 'text-white'}`}>
               <span className="text-accent">Meera</span> Enterprises
             </span>

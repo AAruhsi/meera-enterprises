@@ -70,8 +70,9 @@ const BookingForm = () => {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1vcweU-aBDMpY_DtN-k9DezKDJ6yp7RkLZmEiGm2b1oop7jVOA28u9M9SI3adEYdK/exec";
-  const DEPLOYMENT_ID = "AKfycbx1vcweU-aBDMpY_DtN-k9DezKDJ6yp7RkLZmEiGm2b1oop7jVOA28u9M9SI3adEYdK"
+  // Read sensitive endpoints/IDs from environment variables (Vite uses VITE_ prefix)
+  const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
+  const DEPLOYMENT_ID = import.meta.env.VITE_GOOGLE_DEPLOYMENT_ID;
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -94,16 +95,20 @@ const BookingForm = () => {
         status: "New"
       };
 
-      // 1️⃣ Send to Google Sheets
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        body: JSON.stringify(sheetData),
-      });
+      // 1️⃣ Send to Google Sheets (only if env variable is provided)
+      if (GOOGLE_SCRIPT_URL) {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(sheetData),
+        });
+      } else {
+        console.warn('VITE_GOOGLE_SCRIPT_URL not set — skipping Google Sheets submit');
+      }
 
       // 2️⃣ (Optional) Send to your backend
       // await fetch(import.meta.env.VITE_API_URL + '/api/bookings', {...})
 
-      const OWNER_WHATSAPP = '919927957598';
+      const OWNER_WHATSAPP = import.meta.env.VITE_OWNER_WHATSAPP 
 
       const message =
         `*New Service Booking*\n\n` +

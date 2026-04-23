@@ -1,26 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, ShieldCheck } from 'lucide-react';
 
-import acRepair from '../assets/ac-repair.jpg';
-import cooktopRepair from '../assets/cooktop-repair.jpg';
-import washingMachineRepair from '../assets/washing-repair.jpg';
-import fridgeRepair from '../assets/fridge-repair.jpg';
-
 const slides = [
   {
-    src: washingMachineRepair,
+    src: "washing-repair.jpg",
     alt: 'Technician repairing washing machine'
   },
   {
-    src: cooktopRepair,
+    src: "cooktop-repair.jpg",
     alt: 'Cooktop repair technician working on a stove'
   },
   {
-    src: acRepair,
+    src: "ac-repair.jpg",
     alt: 'AC unit servicing'
   },
   {
-    src: fridgeRepair,
+    src: "fridge-repair.jpg",
     alt: 'Refrigerator repair'
   }
 ];
@@ -63,7 +58,7 @@ const Hero = () => {
               </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-balance mb-6">
-              <span className="text-blue-400">Reliable Appliance & Electrical Services</span>
+              <span className="text-white">Reliable Appliance & Electrical Services</span>
               <span className="text-yellow-400"> at Your Doorstep</span>
             </h1>
 

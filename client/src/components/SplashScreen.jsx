@@ -16,7 +16,7 @@ const SplashScreen = ({ onDone }) => {
       {/* Logo */}
       <div className="mb-8">
         <img
-          src="/Meera.png"
+          src="MeeraLogo.png"
           alt="Meera Enterprises"
           className="w-36 h-36 object-contain"
           style={{ animation: 'logoPulse 2s ease-in-out infinite' }}
