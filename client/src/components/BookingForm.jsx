@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, MapPin, Phone, User, Settings, CheckCircle2, Loader2, ShieldCheck, MessageSquare } from 'lucide-react';
+import { MessageSquare, CheckCircle2, Loader2 } from 'lucide-react';
 
 const BookingForm = () => {
   const [loading, setLoading] = useState(false);
@@ -20,330 +20,171 @@ const BookingForm = () => {
 
   const validate = () => {
     const newErrors = {};
-    if (!formData.name.trim()) {
-      newErrors.name = 'Full name is required';
-    } else if (formData.name.trim().length < 3) {
-      newErrors.name = 'Name must be at least 3 characters long';
-    }
-
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
-      newErrors.phone = 'Please enter a valid 10-digit phone number';
-    }
-
-    if (!formData.service) {
-      newErrors.service = 'Please select a service';
-    }
-
-    if (formData.date) {
-      const selectedDate = new Date(formData.date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (selectedDate < today) {
-        newErrors.date = 'Date cannot be in the past';
-      }
-    }
-
+    if (!formData.name.trim()) newErrors.name = 'Name required';
+    if (!formData.phone.trim()) newErrors.phone = 'Phone required';
+    if (!formData.service) newErrors.service = 'Service required';
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const servicesList = [
-    'Fridge Repair', 'Washing Machine Repair', 'Microwave Repair',
-    'Electric Geyser Service', 'RO (Water Purifier) Service', 'OTG Repair',
-    'Cooktop Repair', 'Chimney Service', 'Water Dispenser Repair',
-    'AC (Air Conditioner) Service', 'Dryer Repair', 'Cooler Repair',
-    'TV Repair', 'General Electrical Work', 'Other Appliance Service'
-  ];
-
-  const brandsList = [
-    'Samsung', 'Whirlpool', 'LG', 'IFB', 'Croma', 'Siemens', 'Bosch', 'Haier', 'Other / Not sure'
+    'AC Repair', 'Washing Machine', 'Fridge Repair', 'General Electrical', 'Microwave/OTG', 'RO Purifier', 'Electric Geyser', 'Chimney Service', 'TV Repair'
   ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
-  // Read sensitive endpoints/IDs from environment variables (Vite uses VITE_ prefix)
+
   const GOOGLE_SCRIPT_URL = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
-  const DEPLOYMENT_ID = import.meta.env.VITE_GOOGLE_DEPLOYMENT_ID;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validate()) return;
-
     setLoading(true);
 
     try {
-      // Prepare data for Google Sheets
       const sheetData = {
-        name: formData.name,
-        phone: formData.phone,
-        service: formData.service,
-        brand: formData.brand,
-        date: formData.date,
-        time: formData.time,
-        address: formData.address,
-        feedback: "",
-        rating: "",
-        status: "New"
+        type: 'booking',
+        ...formData
       };
 
-      // 1️⃣ Send to Google Sheets (only if env variable is provided)
       if (GOOGLE_SCRIPT_URL) {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: "POST",
           body: JSON.stringify(sheetData),
         });
-      } else {
-        console.warn('VITE_GOOGLE_SCRIPT_URL not set — skipping Google Sheets submit');
       }
 
-      // 2️⃣ (Optional) Send to your backend
-      // await fetch(import.meta.env.VITE_API_URL + '/api/bookings', {...})
-
-      const OWNER_WHATSAPP = import.meta.env.VITE_OWNER_WHATSAPP 
-
-      const message =
-        `*New Service Booking*\n\n` +
-        `*Name:* ${formData.name}\n` +
-        `*Phone:* ${formData.phone}\n` +
-        `*Service:* ${formData.service}\n` +
-        (formData.brand ? `*Brand:* ${formData.brand}\n` : '') +
-        (formData.date ? `*Date:* ${formData.date}\n` : '') +
-        (formData.time ? `*Time:* ${formData.time}\n` : '') +
-        (formData.address ? `*Address:* ${formData.address}` : '');
-
+      const OWNER_WHATSAPP = import.meta.env.VITE_OWNER_WHATSAPP;
+      const message = `*New Service Booking*\n\n*Name:* ${formData.name}\n*Phone:* ${formData.phone}\n*Service:* ${formData.service}\n${formData.brand ? `*Brand:* ${formData.brand}\n` : ''}${formData.date ? `*Date:* ${formData.date}\n` : ''}${formData.address ? `*Address:* ${formData.address}` : ''}`;
       const url = `https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(message)}`;
       setWhatsappUrl(url);
-
-      // Success UI
       setSuccess(true);
-
-      // Try to open automatically (might be blocked by browser)
-      try {
-        window.open(url, '_blank');
-      } catch (e) {
-        console.error("Popup blocked:", e);
-      }
-
-      // Reset form
-      setFormData({
-        name: '',
-        phone: '',
-        service: '',
-        brand: '',
-        date: '',
-        time: '',
-        address: ''
-      });
-
+      window.open(url, '_blank');
+      
+      setFormData({ name: '', phone: '', service: '', brand: '', date: '', time: '', address: '' });
     } catch (error) {
       console.error(error);
-      alert("Error submitting form");
     } finally {
       setLoading(false);
     }
   };
-  return (
-    <section id="book" className="py-24 bg-primary relative overflow-hidden">
-      {/* Dynamic background element */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary-dark rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
-        <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-12 border border-gray-100">
-
-          <div className="text-center mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-dark mb-3">Book a Service Instantly</h2>
-            <p className="text-gray-500">Fill out the form below and our technician will reach out to you shortly.</p>
-          </div>
-
-          {success ? (
-            <div className="bg-green-50 border border-green-200 rounded-2xl p-12 text-center flex flex-col items-center justify-center min-h-[400px]">
-              <div className="bg-green-100 p-4 rounded-full mb-6">
-                <CheckCircle2 className="w-12 h-12 text-green-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-green-800 mb-2">Booking Confirmed!</h3>
-              <p className="text-green-700 max-w-sm mx-auto mb-6">
-                Thank you! We've received your request for {formData.service || 'your service'}. Our team will contact you soon.
-              </p>
-
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-4 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-xl font-bold text-lg shadow-lg shadow-green-200 flex items-center justify-center gap-2 transition-all active:scale-95"
-              >
-                <MessageSquare className="w-6 h-6" />
-                Continue to WhatsApp
-              </a>
-
-              <p className="text-xs text-gray-400 mt-4">
-                Redirection not working? Click the button above.
-              </p>
-              <button
-                onClick={() => setSuccess(false)}
-                className="mt-8 text-green-700 font-semibold hover:text-green-800 underline decoration-2 underline-offset-4"
-              >
-                Book another service
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                {/* Form Group: Name */}
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <User className="w-4 h-4 text-primary" /> Full Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className={`w-full bg-gray-50 border ${errors.name ? 'border-red-500' : 'border-gray-200'} text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all`}
-                    placeholder="Rahul Sharma"
-                  />
-                  {errors.name && <p className="text-red-500 text-xs mt-1 ml-1">{errors.name}</p>}
-                </div>
-
-                {/* Form Group: Phone */}
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-primary" /> Phone Number *
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className={`w-full bg-gray-50 border ${errors.phone ? 'border-red-500' : 'border-gray-200'} text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all`}
-                    placeholder="99999 99999"
-                  />
-                  {errors.phone && <p className="text-red-500 text-xs mt-1 ml-1">{errors.phone}</p>}
-                </div>
-
-                {/* Form Group: Service */}
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <Settings className="w-4 h-4 text-primary" /> Select Service *
-                  </label>
-                  <select
-                    name="service"
-                    value={formData.service}
-                    onChange={handleChange}
-                    className={`w-full bg-gray-50 border ${errors.service ? 'border-red-500' : 'border-gray-200'} text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all appearance-none cursor-pointer`}
-                  >
-                    <option value="" disabled>Choose a service...</option>
-                    {servicesList.map((srv) => <option key={srv} value={srv}>{srv}</option>)}
-                  </select>
-                  {errors.service && <p className="text-red-500 text-xs mt-1 ml-1">{errors.service}</p>}
-                </div>
-
-                {/* Form Group: Brand */}
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <Settings className="w-4 h-4 text-primary" /> Appliance Brand
-                  </label>
-                  <select
-                    name="brand"
-                    value={formData.brand}
-                    onChange={handleChange}
-                    className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all appearance-none cursor-pointer"
-                  >
-                    <option value="" disabled>Select brand (optional)...</option>
-                    {brandsList.map((b) => <option key={b} value={b}>{b}</option>)}
-                  </select>
-                </div>
-
-                {/* Form Group: Date */}
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-primary" /> Preferred Date
-                  </label>
-                  <input
-                    type="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleChange}
-                    className={`w-full bg-gray-50 border ${errors.date ? 'border-red-500' : 'border-gray-200'} text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all cursor-pointer`}
-                  />
-                  {errors.date && <p className="text-red-500 text-xs mt-1 ml-1">{errors.date}</p>}
-                </div>
-
-                {/* Form Group: Time */}
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-primary" /> Preferred Time
-                  </label>
-                  <select
-                    name="time"
-                    value={formData.time}
-                    onChange={handleChange}
-                    className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-base rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all appearance-none cursor-pointer"
-                  >
-                    <option value="" disabled>Select a timeslot...</option>
-                    <option value="09:00 AM - 11:00 AM">09:00 AM - 11:00 AM</option>
-                    <option value="11:00 AM - 01:00 PM">11:00 AM - 01:00 PM</option>
-                    <option value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM</option>
-                    <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM</option>
-                    <option value="06:00 PM - 08:00 PM">06:00 PM - 08:00 PM</option>
-                  </select>
-                </div>
-
-              </div>
-
-              {/* Form Group: Address */}
-              <div className="space-y-2 pt-2">
-                <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-primary" /> Full Address (Optional)
-                </label>
-                <textarea
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  rows="3"
-                  className="w-full bg-gray-50 border border-gray-200 text-gray-800 text-base rounded-xl px-4 py-3 focus:ring-2 focus:ring-accent focus:border-accent outline-none transition-all resize-none"
-                  placeholder="Enter house no, building, street, area..."
-                ></textarea>
-              </div>
-
-              {/* Submit Button */}
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`w-full py-4 rounded-xl font-bold text-lg text-white transition-all duration-300 shadow-lg flex items-center justify-center gap-2 active:scale-95 ${loading ? 'bg-accent/80 cursor-not-allowed' : 'bg-accent hover:bg-accent-hover shadow-accent/30'}`}
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-6 h-6 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    'Confirm Booking'
-                  )}
-                </button>
-                <p className="text-center text-xs text-gray-400 mt-4 flex items-center justify-center gap-1">
-                  <ShieldCheck className="w-3 h-3" /> 100% Safe & Secure Booking
-                </p>
-              </div>
-
-            </form>
-          )}
-
+  if (success) {
+    return (
+      <div className="bg-white p-8 md:p-12 rounded-3xl ambient-shadow-l2 border border-slate-100 text-center">
+        <div className="bg-green-100 p-4 rounded-full mb-6 inline-block">
+          <CheckCircle2 className="w-12 h-12 text-green-600" />
         </div>
+        <h3 className="text-2xl font-bold text-[#0B1B32] mb-2">Booking Confirmed!</h3>
+        <p className="text-slate-600 mb-6">Thank you! We've received your request. Our team will contact you soon.</p>
+        <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="w-full py-4 bg-[#25D366] text-white rounded-xl font-bold flex items-center justify-center gap-2 mb-4 hover:bg-[#128C7E] transition-all">
+          <MessageSquare size={20} /> Continue to WhatsApp
+        </a>
+        <button onClick={() => setSuccess(false)} className="text-[#0B1B32] font-semibold underline">Book another service</button>
       </div>
-    </section>
+    );
+  }
+
+  return (
+    <div className="bg-white p-8 md:p-12 rounded-3xl ambient-shadow-l2 border border-slate-100" id="booking">
+      <h2 className="text-[24px] leading-[1.3] font-semibold text-[#0B1B32] mb-2">Book a Service Instantly</h2>
+      <p className="text-on-surface-variant mb-10">Fill the form and our team will contact you within 15 minutes.</p>
+      <form onSubmit={handleSubmit} className="space-y-6 text-left">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-[#0B1B32] mb-2">Full Name</label>
+            <input 
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className={`w-full px-4 py-3 rounded-lg border ${errors.name ? 'border-red-500' : 'border-slate-200'} focus:border-[#0B1B32] focus:ring-0 transition-all outline-none`} 
+              placeholder="John Doe" 
+              type="text"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-[#0B1B32] mb-2">Phone Number</label>
+            <input 
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className={`w-full px-4 py-3 rounded-lg border ${errors.phone ? 'border-red-500' : 'border-slate-200'} focus:border-[#0B1B32] focus:ring-0 transition-all outline-none`} 
+              placeholder="+91 00000 00000" 
+              type="tel"
+            />
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-[#0B1B32] mb-2">Service Type</label>
+            <select 
+              name="service"
+              value={formData.service}
+              onChange={handleChange}
+              className={`w-full px-4 py-3 rounded-lg border ${errors.service ? 'border-red-500' : 'border-slate-200'} focus:border-[#0B1B32] focus:ring-0 transition-all outline-none`}
+            >
+              <option value="">Select Service</option>
+              {servicesList.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-[#0B1B32] mb-2">Brand</label>
+            <input 
+              name="brand"
+              value={formData.brand}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#0B1B32] focus:ring-0 transition-all outline-none" 
+              placeholder="e.g., Samsung" 
+              type="text"
+            />
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-semibold text-[#0B1B32] mb-2">Preferred Date</label>
+            <input 
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#0B1B32] focus:ring-0 transition-all outline-none" 
+              type="date"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-[#0B1B32] mb-2">Preferred Time</label>
+            <input 
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#0B1B32] focus:ring-0 transition-all outline-none" 
+              type="time"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-semibold text-[#0B1B32] mb-2">Service Address</label>
+          <textarea 
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#0B1B32] focus:ring-0 transition-all outline-none" 
+            placeholder="Flat No, Building, Area, Landmark" 
+            rows="3"
+          ></textarea>
+        </div>
+        <button 
+          type="submit" 
+          disabled={loading}
+          className="w-full bg-[#F5A623] text-[#0B1B32] py-4 rounded-xl font-bold hover:bg-[#e0981e] transition-colors shadow-lg flex items-center justify-center gap-2"
+        >
+          {loading ? <Loader2 className="animate-spin" /> : 'Request Callback'}
+        </button>
+      </form>
+    </div>
   );
 };
 

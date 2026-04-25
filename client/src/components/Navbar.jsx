@@ -15,6 +15,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Services', href: '#services' },
+    { name: 'Feedback', href: '#feedback' },
     { name: 'Brands', href: '#brands' },
   ];
 

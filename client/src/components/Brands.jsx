@@ -23,39 +23,22 @@ const Brands = () => {
     { name: 'Philips', logo: philipsLogo },
   ];
 
-  // Duplicate array for a seamless infinite scroll loop
+  // Double the brands to create a seamless loop
   const marqueeBrands = [...brands, ...brands];
 
   return (
-    <section id="brands" className="py-20 bg-gray-50 border-y border-gray-100 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="text-center">
-          <h3 className="text-2xl md:text-3xl font-bold text-primary-dark">We Service All Major Brands</h3>
-          <p className="text-gray-500 mt-2">Genuine spare parts and brand-specific expertise</p>
-        </div>
+    <section id="brands" className="py-20 bg-white border-y border-slate-100 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 mb-12 text-center">
+        <p className="text-[12px] font-bold text-slate-400 uppercase tracking-widest mb-4">Authorized Service Providers For</p>
+        <h3 className="text-[24px] font-bold text-[#0B1B32]">All Major Brands Supported</h3>
       </div>
 
       <div className="relative w-full overflow-hidden flex pause-on-hover py-4 group">
-        <div className="flex w-max animate-marquee space-x-6 md:space-x-10 pr-6 md:pr-10">
-          {brands.map((brand, idx) => (
+        <div className="animate-marquee-reverse flex gap-12 md:gap-16 items-center">
+          {marqueeBrands.map((brand, idx) => (
             <div
               key={idx}
-              className="flex items-center justify-center transition-all duration-300 w-[180px] md:w-[220px] flex-shrink-0 active:scale-90"
-            >
-              <img
-                src={brand.logo}
-                alt={`${brand.name} logo`}
-                className="h-20 md:h-24 w-full object-contain"
-                loading="lazy"
-              />
-            </div>
-          ))}
-        </div>
-        <div className="flex w-max animate-marquee space-x-6 md:space-x-10 pr-6 md:pr-10" aria-hidden="true">
-          {brands.map((brand, idx) => (
-            <div
-              key={`dup-${idx}`}
-              className="flex items-center justify-center transition-all duration-300 w-[180px] md:w-[220px] flex-shrink-0 active:scale-90"
+              className="flex items-center justify-center transition-all duration-300 w-[150px] md:w-[180px] flex-shrink-0"
             >
               <img
                 src={brand.logo}

@@ -1,155 +1,67 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, ShieldCheck } from 'lucide-react';
-
-const slides = [
-  {
-    src: "washing-repair.jpg",
-    alt: 'Technician repairing washing machine'
-  },
-  {
-    src: "cooktop-repair.jpg",
-    alt: 'Cooktop repair technician working on a stove'
-  },
-  {
-    src: "ac-repair.jpg",
-    alt: 'AC unit servicing'
-  },
-  {
-    src: "fridge-repair.jpg",
-    alt: 'Refrigerator repair'
-  }
-];
+import React from 'react';
 
 const Hero = () => {
-  const [index, setIndex] = useState(1); // start at 1 because of clone at start
-  const [transitionEnabled, setTransitionEnabled] = useState(true);
-  const trackRef = useRef(null);
-
-  // extended slides with clones for seamless loop
-  const extended = [slides[slides.length - 1], ...slides, slides[0]];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex(prev => prev + 1);
-      setTransitionEnabled(true);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // after snapping (transition disabled) re-enable transition on next tick
-  useEffect(() => {
-    if (!transitionEnabled) {
-      const t = setTimeout(() => setTransitionEnabled(true), 30);
-      return () => clearTimeout(t);
-    }
-    return undefined;
-  }, [transitionEnabled]);
-
   return (
-    <section className="pt-24 pb-12 md:pt-40 md:pb-24">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-
-          {/* Left: Content */}
-          <div className="text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 mb-6 backdrop-blur-sm">
-                <ShieldCheck className="w-4 h-4 text-accent" />
-                <span className="text-blue-200 text-sm font-medium">All Brand Service Available</span>
-              </div>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-balance mb-6">
-              <span className="text-white">Reliable Appliance & Electrical Services</span>
-              <span className="text-yellow-400"> at Your Doorstep</span>
+    <>
+      <section className="relative bg-white overflow-hidden pt-20">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+          <div className="z-10">
+            <span className="inline-block py-1 px-3 rounded-full bg-secondary-fixed text-on-secondary-fixed text-[12px] font-bold tracking-[0.05em] mb-6">PROMPT & PROFESSIONAL</span>
+            <h1 className="text-[48px] leading-[1.2] font-bold text-[#0B1B32] mb-6 tracking-[-0.02em]">
+              Reliable Appliance & Electrical Services <span className="text-[#F5A623]">at Your Doorstep</span>
             </h1>
-
-            <p className="text-lg text-blue-100 mb-8 max-w-2xl">
-              Fast, safe, and affordable repair solutions for all major home appliances. Our certified technicians ensure your peace of mind.
+            <p className="text-[18px] leading-[1.6] text-on-surface-variant mb-8 max-w-lg">
+              Expert repairs for all major household appliances and precision electrical wiring solutions. Licensed technicians ready to serve you 24/7.
             </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href="#book"
-                className="bg-accent text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-accent-hover transition-all duration-300 shadow-lg shadow-accent/20 flex items-center justify-center gap-2 tracking-wide"
+            <div className="flex flex-wrap gap-4">
+              <a 
+                href="#booking" 
+                className="bg-[#F5A623] text-[#0B1B32] px-8 py-4 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2"
               >
-                Book a Service
-                <ArrowRight className="w-5 h-5" />
+                Book a Service 
+                <span className="material-symbols-outlined">calendar_month</span>
               </a>
-              <a
-                href="#services"
-                className="px-8 py-4 rounded-xl font-semibold text-lg text-white hover:bg-white/10 transition-colors border border-white/30 flex items-center justify-center"
+              <a 
+                href="#services" 
+                className="border-2 border-[#0B1B32] text-[#0B1B32] px-8 py-4 rounded-lg font-semibold hover:bg-[#0B1B32] hover:text-white transition-all"
               >
                 Explore Services
               </a>
             </div>
-
-            {/* Stats */}
-            <div className="mt-12 grid grid-cols-3 gap-4 border-t border-white/10 pt-8">
-              <div>
-                <p className="text-3xl font-bold text-accent">10+</p>
-                <p className="text-sm text-gray-400 mt-1">Years Experience</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-accent">5k+</p>
-                <p className="text-sm text-gray-400 mt-1">Happy Clients</p>
-              </div>
-              <div>
-                <p className="text-3xl font-bold text-accent">24/7</p>
-                <p className="text-sm text-gray-400 mt-1">Support Available</p>
-              </div>
+          </div>
+          <div className="relative">
+            <div className="absolute -top-12 -right-12 w-64 h-64 bg-secondary-fixed/30 rounded-full blur-3xl"></div>
+            <div className="relative rounded-2xl overflow-hidden ambient-shadow-l2 border border-slate-100">
+              <img 
+                alt="Professional Technician" 
+                className="w-full h-[500px] lg:h-[600px] object-cover" 
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhfW2Ir53A9nsUaB6_kYT135Vo0wtROjZPLLIqJYUW4kLTP33LnLXI26igfbthyHShnMJhLyNrKjdHUhKhR2tja6CH4psyTF1AxDq6bOolhuINRxxVFXt9jclEDeP1zKIM-mzWYIZzztXr8q8F4OkjJXFp8vgaf4uDo4QEKmq9Q8AUa9-ntXww10aW_fPG-nSK41xnz1qwUNVQ6WnSJqc7si5joz4gB4MlqcLHicT8gH5kDT8HJTkWGfsjofDzXsMPbUzvuhBOIg"
+              />
             </div>
           </div>
-
-          {/* Right: Small carousel panel */}
-          <div className="w-full flex justify-center">
-            <div className="w-full max-w-md aspect-4/3 rounded-xl overflow-hidden shadow-2xl relative bg-black">
-              <div
-                ref={trackRef}
-                className="flex h-full"
-                style={{
-                  width: `${extended.length * 100}%`,
-                  transform: `translateX(-${index * (100 / extended.length)}%)`,
-                  transition: transitionEnabled ? 'transform 1s ease-in-out' : 'none'
-                }}
-                onTransitionEnd={() => {
-                  if (index === extended.length - 1) {
-                    setTransitionEnabled(false);
-                    setIndex(1);
-                  }
-                  if (index === 0) {
-                    setTransitionEnabled(false);
-                    setIndex(extended.length - 2);
-                  }
-                }}
-              >
-                {extended.map((slide, i) => (
-                  <div key={i} className="w-full h-full flex items-center justify-center shrink-0" style={{ width: `${100 / extended.length}%` }}>
-                    <img src={slide.src} alt={slide.alt} className="w-full h-full object-cover" />
-                  </div>
-                ))}
-              </div>
-
-              {/* subtle overlay to soften image */}
-              <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-
-              {/* Dot indicators inside panel */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                {slides.map((_, i) => {
-                  const active = ((index - 1) % slides.length + slides.length) % slides.length === i;
-                  return (
-                    <button
-                      key={i}
-                      onClick={() => { setIndex(i + 1); setTransitionEnabled(true); }}
-                      className={`h-2 rounded-full transition-all duration-300 ${active ? 'bg-accent w-6' : 'bg-white/50 w-2'}`}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Stats Bar */}
+      <section className="bg-[#0B1B32] py-12">
+        <div className="max-w-7xl mx-auto px-6 md:px-12">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
+            <div className="flex flex-col items-center">
+              <span className="text-4xl font-black text-[#F5A623] mb-2">10+</span>
+              <span className="text-white/80 text-[12px] font-bold tracking-[0.05em] uppercase">YEARS EXPERIENCE</span>
+            </div>
+            <div className="flex flex-col items-center border-y md:border-y-0 md:border-x border-white/10 py-8 md:py-0">
+              <span className="text-4xl font-black text-[#F5A623] mb-2">5k+</span>
+              <span className="text-white/80 text-[12px] font-bold tracking-[0.05em] uppercase">HAPPY CLIENTS</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-4xl font-black text-[#F5A623] mb-2">24/7</span>
+              <span className="text-white/80 text-[12px] font-bold tracking-[0.05em] uppercase">SUPPORT AVAILABLE</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 };
 

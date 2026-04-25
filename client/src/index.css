@@ -1,61 +1,123 @@
 @import "tailwindcss";
 
 @theme {
-  /* Core palette (dark background with blue text + yellow accent) */
-  --color-primary: #071428; /* deep navy */
-  --color-primary-dark: #020617;
-  --color-accent: #f59e0b; /* amber / yellow */
-  --color-accent-hover: #fbbf24;
-  --color-background: #071428;
-  --color-text-main: #cfe8ff; /* pale blue for body text */
-  --color-text-light: #9fc6ea;
-  --color-white: #ffffff;
-  --color-gray-200: #e5e7eb;
+  --color-primary-fixed: #d6e3ff;
+  --color-primary: #0B1B32;
+  /* Navy */
+  --color-accent: #F5A623;
+  /* Amber */
+  --color-accent-hover: #e0981e;
+  --color-surface-container-high: #e7e8e9;
+  --color-primary-container: #0c1c33;
+  --color-on-error-container: #93000a;
+  --color-outline-variant: #c5c6ce;
+  --color-error-container: #ffdad6;
+  --color-on-secondary-container: #6b4500;
+  --color-inverse-surface: #2e3132;
+  --color-error: #ba1a1a;
+  --color-inverse-primary: #b8c7e5;
+  --color-tertiary-fixed-dim: #adc8f5;
+  --color-secondary-fixed-dim: #ffb955;
+  --color-on-error: #ffffff;
+  --color-on-tertiary-fixed: #001c3b;
+  --color-primary-fixed-dim: #b8c7e5;
+  --color-on-background: #191c1d;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-bright: #f8f9fa;
+  --color-tertiary: #000000;
+  --color-on-secondary-fixed: #291800;
+  --color-on-primary-fixed: #0c1c33;
+  --color-on-secondary-fixed-variant: #633f00;
+  --color-surface-container-low: #f3f4f5;
+  --color-background: #f8f9fa;
+  --color-secondary: #835500;
+  --color-on-primary: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-surface-dim: #d9dadb;
+  --color-on-tertiary-container: #6b85ae;
+  --color-surface-container: #edeeef;
+  --color-surface-tint: #505f79;
+  --color-outline: #75777e;
+  --color-on-tertiary-fixed-variant: #2d486d;
+  --color-tertiary-fixed: #d5e3ff;
+  --color-surface-variant: #e1e3e4;
+  --color-secondary-fixed: #ffddb4;
+  --color-on-primary-container: #7684a0;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-secondary: #ffffff;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #001c3b;
+  --color-secondary-container: #feae2c;
+  --color-on-surface: #191c1d;
+  --color-inverse-on-surface: #f0f1f2;
+  --color-on-surface-variant: #44474d;
+  --color-on-primary-fixed-variant: #394760;
 
-  /* Compatibility variables used elsewhere in the stylesheet */
-  --accent: var(--color-accent);
-  --accent-bg: rgba(245,158,11,0.08);
-  --accent-border: rgba(245,158,11,0.18);
-  --border: rgba(255,255,255,0.06);
-  --text-h: var(--color-text-main);
-  --social-bg: rgba(255,255,255,0.03);
-  --shadow: 0 10px 30px rgba(2,6,23,0.6);
+  --color-deep-navy: #0B1B32;
+
+  --font-family-h3: 'Inter', sans-serif;
+  --font-family-h2: 'Inter', sans-serif;
+  --font-family-body-lg: 'Inter', sans-serif;
+  --font-family-label-caps: 'Inter', sans-serif;
+  --font-family-button-text: 'Inter', sans-serif;
+  --font-family-body-sm: 'Inter', sans-serif;
+  --font-family-body-md: 'Inter', sans-serif;
+  --font-family-h1: 'Inter', sans-serif;
 }
 
 body {
   background-color: var(--color-background);
-  color: var(--color-text-main);
+  color: var(--color-on-background);
   font-family: 'Inter', system-ui, sans-serif;
   scroll-behavior: smooth;
   margin: 0;
   padding: 0;
 }
 
-/* Custom Utilities */
-@utility text-balance {
-  text-wrap: balance;
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.ambient-shadow-l1 {
+  box-shadow: 0 4px 20px -2px rgba(11, 27, 50, 0.05);
+}
+
+.ambient-shadow-l2 {
+  box-shadow: 0 12px 40px -4px rgba(11, 27, 50, 0.1);
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee-reverse 30s linear infinite;
 }
 
 #root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-@keyframes marquee {
-  0% {
-    transform: translateX(0%);
-  }
-
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.animate-marquee {
-  animation: marquee 30s linear infinite;
-}
-
-.pause-on-hover:hover .animate-marquee {
-  animation-play-state: paused;
 }
