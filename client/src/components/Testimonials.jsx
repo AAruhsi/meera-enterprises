@@ -18,7 +18,7 @@ const Testimonials = () => {
             <div className="w-12 h-12 rounded-full bg-slate-200"></div>
             <div>
               <p className="font-semibold text-[#0B1B32]">Rajesh Sharma</p>
-              <p className="text-sm text-slate-500">Andheri West, Mumbai</p>
+              <p className="text-sm text-slate-500">Ahmedabad , Gujarat</p>
             </div>
           </div>
         </div>
@@ -35,7 +35,7 @@ const Testimonials = () => {
             <div className="w-12 h-12 rounded-full bg-slate-200"></div>
             <div>
               <p className="font-semibold text-[#0B1B32]">Anita Desai</p>
-              <p className="text-sm text-slate-500">Powai, Mumbai</p>
+              <p className="text-sm text-slate-500">Ahmedabad , Gujarat</p>
             </div>
           </div>
         </div>
